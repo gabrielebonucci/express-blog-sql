@@ -6,7 +6,8 @@ const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',     
   password: '2301',     
-  database: 'blog'  
+  database: 'blog',
+  autocommit: true
 });
 
 // Provo a connettermi

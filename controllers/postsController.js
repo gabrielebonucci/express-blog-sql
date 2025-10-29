@@ -85,24 +85,16 @@ function modify(req, res) {
 }
 
 function destroy(req, res) {
-  // elimina un singolo post dalla lista, stampa nel terminale la lista aggiornata e risponde con uno stato 204 e nessun contenuto
-  const id = parseInt(req.params.id);
+  
+  // recuperiamo l'id dall' URL
+  const { id } = req.params; 
 
-  const post = postsExported.findIndex((post) => post.id === id);
-
-  if (post === -1) {
-    res.status(404);
-    return res.json({
-      status: 404,
-      error: "Post not found",
-      message: "Post non trovato",
-    });
-  }
-
-  postsExported.splice(post, 1);
-  console.log("Lista aggiornata dei post:", postsExported);
-
-  res.sendStatus(204);
+  // eliminiamo il post
+  connection.query('DELETE FROM posts WHERE id = ?', [id], (err) => {
+    if (err) return res.status(500).json({ error: 'Failed to delete post' });
+    console.log("--- QUERY DELETE ESEGUITA SENZA ERRORI ---");
+    res.sendStatus(204)
+  });
 }
 
 module.exports = { index, show, store, update, modify, destroy };
