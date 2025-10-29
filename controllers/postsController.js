@@ -1,3 +1,6 @@
+//importo db
+const connection = require('../data/db');   
+
 // importo i post
 const postsExported = require("../data/postsExported");
 
