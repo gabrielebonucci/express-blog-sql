@@ -1,0 +1,15 @@
+{
+  "name": "express-blog-intro",
+  "version": "1.0.0",
+  "description": " express-blog",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "nodemon app.js"
+  },
+  "author": "Gabriele Bonucci",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
