@@ -17,16 +17,45 @@ function index(req, res) {
   });
 }
 
+// Show
 function show(req, res) {
-  // recuperiamo l'id dall'URL
-  const id = req.params.id;
   
-  const sql = 'SELECT * FROM posts WHERE id = ?';
-  connection.query(sql, [id], (err, results) => {
-     if(err) return res.status(500).json({ error: 'Database query failed' });
-     if (results.length === 0) return res.status(404).json({ error: 'Post not found' });
-     res.json(results[0]);
+  // Recuperiamo l'id
+  const { id } = req.params;
+
+  // prepariamo la query per il post 
+  const postSql = 'SELECT * FROM posts WHERE id = ?';
+
+  // Prepariamo la query per i tag aiutandoci con una join e Where 
+  const tagsSql = `
+    SELECT T.* 
+    FROM tags T 
+    JOIN post_tag PT ON T.id = PT.tag_id 
+    WHERE PT.post_id = ?
+  `;
+
+  // Eseguiamo la prima query per il post
+  connection.query(postSql, [id], (err, postResults) => {
+    
+    if (err) return res.status(500).json({ error: 'Database query failed (post)' });
+
+    if (postResults.length === 0) return res.status(404).json({ error: 'Post not found' });
+
+    // Recuperiamo il post
+    const post = postResults[0];
+
+    // Se è andata bene, eseguiamo la seconda query per i tag 
+    connection.query(tagsSql, [id], (err, tagsResults) => {
+      
+      if (err) return res.status(500).json({ error: 'Database query failed (tags)' });
+
+      // Aggiungiamo i tag al post
+      post.tags = tagsResults;
+
+      // Inviamo il post completo
+      res.json(post); 
     });
+  });
 }
 
 function store(req, res) {
@@ -79,6 +108,7 @@ function modify(req, res) {
   res.send("Modifica parziale del post " + req.params.id);
 }
 
+//Destroy
 function destroy(req, res) {
   
   // recuperiamo l'id dall' URL
@@ -87,7 +117,7 @@ function destroy(req, res) {
   // eliminiamo il post
   connection.query('DELETE FROM posts WHERE id = ?', [id], (err) => {
     if (err) return res.status(500).json({ error: 'Failed to delete post' });
-    console.log("--- QUERY DELETE ESEGUITA SENZA ERRORI ---");
+    //console.log("QUERY DELETE ESEGUITA SENZA ERRORI");
     res.sendStatus(204)
   });
 }
