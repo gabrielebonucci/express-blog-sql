@@ -1,21 +1,20 @@
 //importo db
 const connection = require('../data/db');   
 
-// importo i post
-const postsExported = require("../data/postsExported");
-
+// Index
 function index(req, res) {
-  //restituisce la lista dei post in formato json + bonus: filtra per tag se è presente nella query string
+  // prepariamo la query 
+  const sql = 'SELECT * FROM posts';
 
-  const tagsRichiesto = req.query.tags;
-  if (!tagsRichiesto) {
-    return res.json(postsExported);
-  }
-  const postsFiltrati = postsExported.filter((post) =>
-    post.tags.includes(tagsRichiesto)
-  );
-
-  return res.json(postsFiltrati);
+  // eseguiamo la query
+  connection.query(sql, (err, results) => {
+    
+    // gestione l'errore 
+    if (err) return res.status(500).json({ error: 'Database query failed' });
+    
+    // risultati in JSON
+    res.json(results);
+  });
 }
 
 function show(req, res) {
